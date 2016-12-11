@@ -32,52 +32,77 @@ while True:
         cmd = input("Command: ")
         if cmd == "1":
             #ADDITION
-            a = numerationBasesObj.numberToVector(int(input("First number: ")))
-            b = numerationBasesObj.numberToVector(int(input("Second number: ")))
+            a = numerationBasesObj.base16NumberToVector(input("First number: "))
+            b = numerationBasesObj.base16NumberToVector(input("Second number: "))
             a = a["integer"]
             b = b["integer"]
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToNumber(numerationBasesObj.sum(a, b, base)))
+            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.sum(a, b, base)))
 
         if cmd == "2":
             #SUBSTRACTION
-            a = numerationBasesObj.numberToVector(int(input("First number: ")))
-            b = numerationBasesObj.numberToVector(int(input("Second number: ")))
+            a = numerationBasesObj.base16NumberToVector(input("First number: "))
+            b = numerationBasesObj.base16NumberToVector(input("Second number: "))
             a = a["integer"]
             b = b["integer"]
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToNumber(numerationBasesObj.sub(a, b, base)))
+            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.sub(a, b, base)))
 
         if cmd == "3":
             #MULTIPLICATION
-            a = numerationBasesObj.numberToVector(int(input("First number: ")))
-            b = int(input("Second number: "))
+            a = numerationBasesObj.base16NumberToVector(input("First number: "))
             a = a["integer"]
+            b = input("Second number: ")
+            if b >= '0' and b <='9':
+                b = int(b)
+            else:
+                if b >= 'A' and b <= 'F':
+                    b = ord(b) - ord('A') + 10
+                else:
+                    raise RuntimeError("Invalid value, must be between 0 and F")
 
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToNumber(numerationBasesObj.prod(a, b, base)))
+            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.prod(a, b, base)))
 
         if cmd == "4":
             #DIVISION
-            a = numerationBasesObj.numberToVector(int(input("First number: ")))
-            b = int(input("Second number: "))
+            a = numerationBasesObj.base16NumberToVector(input("First number: "))
             a = a["integer"]
+            b = input("Second number: ")
+            if b >= '0' and b <= '9':
+                b = int(b)
+            else:
+                if b >= 'A' and b <= 'F':
+                    b = ord(b) - ord('A') + 10
+                else:
+                    raise RuntimeError("Invalid value, must be between 0 and F")
 
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToNumber(numerationBasesObj.div(a, b, base)))
+            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.div(a, b, base)))
 
         if cmd == "5":
             #REMAINDER OF THE DIVISION
-            a = numerationBasesObj.numberToVector(int(input("First number: ")))
-            b = int(input("Second number: "))
+            a = numerationBasesObj.base16NumberToVector(input("First number: "))
             a = a["integer"]
+            b = input("Second number: ")
+            if b >= '0' and b <= '9':
+                b = int(b)
+            else:
+                if b >= 'A' and b <= 'F':
+                    b = ord(b) - ord('A') + 10
+                else:
+                    raise RuntimeError("Invalid value, must be between 0 and F")
 
             base = int(input("Base: "))
-            print(numerationBasesObj.divR(a, b, base))
+            res = numerationBasesObj.divR(a, b, base)
+            if res < 10:
+                print(res)
+            else:
+                print(chr(res+ord('A')-10))
 
         if cmd == "6":
             #RAPID CONVERSION
-            a = numerationBasesObj.numberToVector(float(input("Number: ")))
+            a = numerationBasesObj.base16NumberToVector(input("Number: "))
 
             baseSrc = int(input("Source base: "))
             baseDst = int(input("Destination base: "))
@@ -87,16 +112,17 @@ while True:
             else:
                 res = numerationBasesObj.rapidConversionToLowerBase(a, baseSrc, baseDst)
 
-            print(str(numerationBasesObj.vectorToNumber(res["integer"])) + "." + str(numerationBasesObj.vectorToNumber(res["fractional"])))
+            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
+        #TO FIX HERE
         if cmd == "7":
             # CONVERT TO BASE 10
-            a = float(input("Number: "))
+            a = float(input("Number: ",), 16)
             baseSrc = int(input("Source base: "))
 
             res = numerationBasesObj.convertToBase10(a, baseSrc)
 
-            print(str(numerationBasesObj.vectorToNumber(res["integer"])) + "." + str(numerationBasesObj.vectorToNumber(res["fractional"])))
+            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
         if cmd == "8":
             # CONVERT FROM BASE 10
@@ -105,8 +131,9 @@ while True:
 
             res = numerationBasesObj.convertFromBase10(a, baseDst)
 
-            print(str(numerationBasesObj.vectorToNumber(res["integer"])) + "." + str(numerationBasesObj.vectorToNumber(res["fractional"])))
+            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
+        #TO FIX HERE
         if cmd == "9":
             # CONVERT FROM ANY BASE TO BASE
             a = float(input("Number: "))
@@ -122,3 +149,5 @@ while True:
             print(str(numerationBasesObj.vectorToNumber(res["integer"])) + "." + str(numerationBasesObj.vectorToNumber(res["fractional"])))
     except ValueError as e:
         print("Invalid value !")
+    except RuntimeError as e:
+        print(e)

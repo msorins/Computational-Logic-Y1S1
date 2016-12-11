@@ -1,5 +1,7 @@
 import math
 
+import re
+
 __author__ = 'sorynsoo'
 
 class NumerationBases():
@@ -134,6 +136,49 @@ class NumerationBases():
 
         return t
 
+    def base16NumberToVector(self, nr):
+        '''
+        :param nr: a string
+        :return: a vector containing its digits in reverse order
+        '''
+        matcher = re.compile(r"^[0-9A-F]+$")
+        matcher2 = re.compile(r"^[0-9A-F]+.[0-9A-F]+$")
+
+        convertedIntegerNumber = []
+        convertedFractionalNumber = []
+
+        if matcher.match(nr):
+            integerPart = nr
+
+            for i in range(len(integerPart) - 1, -1, -1):
+                if integerPart[i] >= '0' and integerPart[i] <= '9':
+                    convertedIntegerNumber.append(int(integerPart[i]))
+                else:
+                    convertedIntegerNumber.append(ord(integerPart[i]) - ord('A') + 10)
+
+            return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber}
+
+        if matcher2.match(nr):
+            integerPart = nr[0]
+            fractionalPart = nr[0]
+
+            for i in range(len(integerPart) - 1, -1, -1):
+                if integerPart[i] >= '0' and integerPart[i] <= '9':
+                    convertedIntegerNumber.append(int(integerPart[i]))
+                else:
+                    convertedIntegerNumber.append(ord(integerPart[i]) - ord('A') + 10)
+
+            for i in range(len(fractionalPart) - 1, -1, -1):
+                if fractionalPart[i] >= '0' and fractionalPart[i] <= '9':
+                    convertedFractionalNumber.append(int(fractionalPart[i]))
+                else:
+                    convertedFractionalNumber.append(ord(fractionalPart[i]) - ord('A') + 10)
+
+            return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber}
+
+
+        raise RuntimeError("Input is not valid")
+
     def numberToVector(self, nr):
         '''
         :param nr: a number in any base
@@ -185,6 +230,23 @@ class NumerationBases():
             counter += 1
             if counter >= 4:
                 break
+
+        return res
+
+    def vectorToBase16Number(self, a):
+        '''
+        :param a: a vector
+        :return: a string containing the number in base 16
+        '''
+        res = ''
+
+        a = a[::-1]
+
+        for i in range(len(a)):
+            if a[i] < 10:
+                res = res + str(a[i])
+            else:
+                res = res + chr(a[i]+ord('A')-10)
 
         return res
 
