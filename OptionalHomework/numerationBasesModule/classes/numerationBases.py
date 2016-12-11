@@ -210,6 +210,8 @@ class NumerationBases():
         return fractional
 
     def removeInteger(self, nr):
+        if str(nr).find('.') == -1:
+            return 0
         nr = str(nr).split('.')
         nr = nr[1]
 
@@ -353,6 +355,9 @@ class NumerationBases():
         if baseSrc == 4 and baseDst != 16:
             raise RuntimeError("Combination of bases is not corect. Must be 4 -> 16")
 
+        if baseSrc != 2 and baseSrc != 4:
+            raise RuntimeError("Combination of bases is not corect")
+
 
         convertedIntegerNumber = []
         convertedFractionalNumber = []
@@ -366,13 +371,14 @@ class NumerationBases():
 
             #binaryDigits = binaryDigits[::-1]
             nrBinaryDigits = self.vectorToNumber(binaryDigits) # Convert it to a vector
-            nrBinaryDigits = self.convertToBase10(nrBinaryDigits, 2) # Convert the vector in base 10
+            nrBinaryDigits = self.convertToBase10(nrBinaryDigits, baseSrc) # Convert the vector in base 10
             nrBinaryDigits = self.vectorToNumber(nrBinaryDigits["integer"]) # Convert the vector in base 10
             convertedIntegerNumber.append(nrBinaryDigits)
 
             i = i + nrOfRepeats
 
 
+        a["fractional"] = a["fractional"][::-1]
         i = 0
         while i < len(a["fractional"]):
             binaryDigits = a["fractional"][i:i+nrOfRepeats]
@@ -382,13 +388,13 @@ class NumerationBases():
 
             binaryDigits = binaryDigits[::-1]
             nrBinaryDigits = self.vectorToNumber(binaryDigits) # Convert it to a vector
-            nrBinaryDigits = self.convertToBase10(nrBinaryDigits, 2) # Convert the vector in base 10
+            nrBinaryDigits = self.convertToBase10(nrBinaryDigits, baseSrc) # Convert the vector in base 10
             nrBinaryDigits = self.vectorToNumber(nrBinaryDigits["integer"]) # Convert the vector in base 10
             convertedFractionalNumber.append(nrBinaryDigits)
 
             i = i + nrOfRepeats
 
-        return {"integer": convertedIntegerNumber[::-1], "fractional": convertedFractionalNumber[::-1]}
+        return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber[::-1]}
 
     def conversionToLowerBase(self, nr, baseSrc, baseDst):
         '''
