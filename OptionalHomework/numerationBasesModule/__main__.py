@@ -151,5 +151,5 @@ while True:
             print("To many zecimals for this operation")
         else:
             print("Invalid value !")
-    except RuntimeError as e:
-        print(e)
+    except Exception as e:
+        print("There is something wrong with your value")

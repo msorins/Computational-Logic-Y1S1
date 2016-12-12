@@ -378,7 +378,7 @@ class NumerationBases():
         :return: a dictionary containing two list (one with fractional and one with integer part)
         '''
 
-        if baseSrc == 16 and baseDst != 4 and baseDst != 2:
+        if baseSrc == 16 and baseDst !=8 and baseDst != 4 and baseDst != 2:
             raise RuntimeError("Combination of bases is not corect. Must be 16 -> 4 or 16 -> 2")
 
         if baseSrc == 8 and baseDst != 2:
@@ -560,13 +560,11 @@ class NumerationBases():
              crtFractional = self.numberToVector(fractional[i])
              crtFractional = crtFractional["integer"]
 
-
              if len(crtFractional) != 0:
                 crtProd = self.prod(crtFractional, power, baseDst)
                 crtProd = self.convertRationalToInteger(crtProd[0], 4)
 
                 convertedFractionalNumber = self.sum(convertedFractionalNumber, crtProd, baseDst)
-
 
 
              powerHeins = powerHeins / baseSrc
