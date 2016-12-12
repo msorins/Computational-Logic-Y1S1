@@ -8,20 +8,17 @@ numerationBasesObj = NumerationBases()
 menu = [
     "",
     "---  MENU  ---",
-    "1. Add two numbers",
-    "2. Substract two numbers",
-    "3. Multiply two numbers",
-    "4. Divide two numbers",
-    "5. Get reminder from the division of two numbers",
-    "6. Rapid conversion (bases 2 - 4 - 16 or 4 - 16) - rational numbers: ",
-    "7. Convert to base 10 (successive divisions/multiplications) - rational numbers:",
-    "8. Convert from base 10 (successive divisions/multiplications) - rational numbers:",
-    "9. Convert directly from any base to any base (successive divisions/multiplications) - rational numbers:",
+    "1. Add two integer numbers",
+    "2. Substract two integer numbers",
+    "3. Multiply two integer numbers",
+    "4. Divide two integer numbers",
+    "5. Divide two integer numbers and get the remainder",
+    "6. Rapid conversion (bases 2 - 4 - 16 or 4 - 16) of a rational numbers: ",
+    "7. Convert to base 10 (successive divisions/multiplications) of a  rational number:",
+    "8. Convert from base 10 (successive divisions/multiplications) of a  rational number:",
+    "9. Convert directly from any base to any base (successive divisions/multiplications) of a rational number:",
     ""
 ]
-
-
-numerationBasesObj.conversionToHigherBase(10111.1011, 2, 8)
 
 
 while True:
@@ -37,7 +34,7 @@ while True:
             a = a["integer"]
             b = b["integer"]
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.sum(a, b, base)))
+            print("Result: ", numerationBasesObj.vectorToBase16Number(numerationBasesObj.sum(a, b, base)))
 
         if cmd == "2":
             #SUBSTRACTION
@@ -46,7 +43,7 @@ while True:
             a = a["integer"]
             b = b["integer"]
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.sub(a, b, base)))
+            print("Result: ", numerationBasesObj.vectorToBase16Number(numerationBasesObj.sub(a, b, base)))
 
         if cmd == "3":
             #MULTIPLICATION
@@ -62,7 +59,7 @@ while True:
                     raise RuntimeError("Invalid value, must be between 0 and F")
 
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.prod(a, b, base)))
+            print("Result: ", numerationBasesObj.vectorToBase16Number(numerationBasesObj.prod(a, b, base)))
 
         if cmd == "4":
             #DIVISION
@@ -78,7 +75,7 @@ while True:
                     raise RuntimeError("Invalid value, must be between 0 and F")
 
             base = int(input("Base: "))
-            print(numerationBasesObj.vectorToBase16Number(numerationBasesObj.div(a, b, base)))
+            print("Result: ", numerationBasesObj.vectorToBase16Number(numerationBasesObj.div(a, b, base)))
 
         if cmd == "5":
             #REMAINDER OF THE DIVISION
@@ -96,9 +93,9 @@ while True:
             base = int(input("Base: "))
             res = numerationBasesObj.divR(a, b, base)
             if res < 10:
-                print(res)
+                print("Result: ", res)
             else:
-                print(chr(res+ord('A')-10))
+                print("Result: ", chr(res+ord('A')-10))
 
         if cmd == "6":
             #RAPID CONVERSION
@@ -112,17 +109,20 @@ while True:
             else:
                 res = numerationBasesObj.rapidConversionToLowerBase(a, baseSrc, baseDst)
 
-            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
+            print("Result: ", str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
-        #TO FIX HERE
         if cmd == "7":
             # CONVERT TO BASE 10
-            a = float(input("Number: ",), 16)
-            baseSrc = int(input("Source base: "))
+            inputValue = input("Number: ",)
+            try:
+                a = float(inputValue)
+            except Exception:
+                a = numerationBasesObj.base16NumberToVector(inputValue)
 
+            baseSrc = int(input("Source base: "))
             res = numerationBasesObj.convertToBase10(a, baseSrc)
 
-            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
+            print("Result: ", str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
         if cmd == "8":
             # CONVERT FROM BASE 10
@@ -133,10 +133,9 @@ while True:
 
             print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
 
-        #TO FIX HERE
         if cmd == "9":
             # CONVERT FROM ANY BASE TO BASE
-            a = float(input("Number: "))
+            a = numerationBasesObj.base16NumberToVector(input("Number: "))
             baseSrc = int(input("Source base: "))
             baseDst = int(input("Destination base: "))
 
@@ -146,8 +145,11 @@ while True:
                 res = numerationBasesObj.conversionToLowerBase(a, baseSrc, baseDst)
 
 
-            print(str(numerationBasesObj.vectorToNumber(res["integer"])) + "." + str(numerationBasesObj.vectorToNumber(res["fractional"])))
+            print(str(numerationBasesObj.vectorToBase16Number(res["integer"])) + "." + str(numerationBasesObj.vectorToBase16Number(res["fractional"])))
     except ValueError as e:
-        print("Invalid value !")
+        if e == "invalid literal for int() with base 10: 'e'":
+            print("To many zecimals for this operation")
+        else:
+            print("Invalid value !")
     except RuntimeError as e:
         print(e)

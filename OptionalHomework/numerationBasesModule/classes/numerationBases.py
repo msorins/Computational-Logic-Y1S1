@@ -142,7 +142,7 @@ class NumerationBases():
         :return: a vector containing its digits in reverse order
         '''
         matcher = re.compile(r"^[0-9A-F]+$")
-        matcher2 = re.compile(r"^[0-9A-F]+.[0-9A-F]+$")
+        matcher2 = re.compile(r"^[0-9A-F]+[.][0-9A-F]+$")
 
         convertedIntegerNumber = []
         convertedFractionalNumber = []
@@ -159,8 +159,9 @@ class NumerationBases():
             return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber}
 
         if matcher2.match(nr):
+            nr = nr.split('.')
             integerPart = nr[0]
-            fractionalPart = nr[0]
+            fractionalPart = nr[1]
 
             for i in range(len(integerPart) - 1, -1, -1):
                 if integerPart[i] >= '0' and integerPart[i] <= '9':
@@ -287,6 +288,7 @@ class NumerationBases():
 
     def convertFromBase10(self, nr, baseDst):
         '''
+        Successive divisions / multiplications8
         :param nr: number to be converted
         :param base:  destionation base
         :return: a dictionary containing two list (one with fractional and one with integer part)
@@ -322,6 +324,13 @@ class NumerationBases():
          :return: a dictionary containing two list (one with fractional and one with integer part)
          '''
 
+         #If the input number is in a base greater than 10 i can better use the convertToLower or Higher Base (which basically does the same thing -> Substitution Method )
+         if(type(nr) is not int and type(nr) is not float):
+             if baseSrc > 10:
+                 return self.conversionToLowerBase(nr, baseSrc, 10)
+             else:
+                 return self.conversionToHigherBase(nr, baseSrc, 10)
+
          convertedIntegerNumber = []
          convertedFractionalNumber = []
 
@@ -347,16 +356,19 @@ class NumerationBases():
 
          #Inverse the fractional part
          aux = self.numberToVector(fractional)
-         aux = aux["fractional"]
+         aux = aux["integer"]
          aux = aux[::-1]
          fractional = self.vectorToNumber(aux)
 
          while fractional:
              resFractional = resFractional + (fractional%10)*power
-             power = power * 1 / baseSrc
+             power = power * (1 / baseSrc)
              fractional = fractional // 10
 
-         return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber[::-1]}
+         convertedFractionalNumber = self.numberToVector(resFractional)
+         convertedFractionalNumber = convertedFractionalNumber["fractional"]
+
+         return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber}
 
     def rapidConversionToLowerBase(self, a, baseSrc, baseDst):
         '''
@@ -458,7 +470,7 @@ class NumerationBases():
 
         return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber[::-1]}
 
-    def conversionToLowerBase(self, nr, baseSrc, baseDst):
+    def conversionToLowerBase(self, a, baseSrc, baseDst):
         '''
         :param nr: number to be converted
         :param base:  destionation base
@@ -467,7 +479,6 @@ class NumerationBases():
         convertedIntegerNumber = []
         convertedFractionalNumber = []
 
-        a = self.numberToVector(nr)
         integer = a["integer"]
         fractional = a["fractional"]
 
@@ -497,18 +508,18 @@ class NumerationBases():
 
         return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber[::-1]}
 
-    def conversionToHigherBase(self, nr, baseSrc, baseDst):
+    def conversionToHigherBase(self, a, baseSrc, baseDst):
          '''
          Substitution Method
          :param nr: number to be converted
-         :param baseSrc: the destination base
+         :param baseSrc: the source base
+         :param baseDst: the destination base
          :return: a dictionary containing two list (one with fractional and one with integer part)
          '''
 
          convertedIntegerNumber = []
          convertedFractionalNumber = []
 
-         a = self.numberToVector(nr)
          integer = a["integer"]
          fractional = a["fractional"]
 
@@ -516,14 +527,27 @@ class NumerationBases():
          power = 1
 
          for i in range(len(integer)):
-             crtPower = self.numberToVector(power)
-             crtPower = crtPower["integer"]
-             crtProd = self.prod(crtPower, integer[i], baseDst)
+             if baseSrc >= 10:
+                 crtInteger = self.numberToVector(integer[i])
+                 crtInteger = crtInteger["integer"]
+                 crtProd = self.prod(crtInteger, power, baseDst)
 
-             convertedIntegerNumber = self.sum(convertedIntegerNumber, crtProd, baseDst)
+                 convertedIntegerNumber = self.sum(convertedIntegerNumber, crtProd, baseDst)
 
-             power = self.prod(crtPower, baseSrc, baseDst)
-             power = self.vectorToNumber(power)
+                 crtPower = self.numberToVector(power)
+                 crtPower = crtPower["integer"]
+                 power = self.prod(crtPower, baseSrc, baseDst)
+                 power = self.vectorToNumber(power)
+
+             else:
+                 crtPower = self.numberToVector(power)
+                 crtPower = crtPower["integer"]
+                 crtProd = self.prod(crtPower, integer[i], baseDst)
+
+                 convertedIntegerNumber = self.sum(convertedIntegerNumber, crtProd, baseDst)
+
+                 power = self.prod(crtPower, baseSrc, baseDst)
+                 power = self.vectorToNumber(power)
 
 
          #Converting the fractional part
@@ -549,8 +573,6 @@ class NumerationBases():
              power = powerHeins
              power = self.convertFromBase10(power, baseDst)
              power = self.vectorToSubunitaryNumber(power["fractional"])
-
-
 
 
          return {"integer": convertedIntegerNumber, "fractional": convertedFractionalNumber}
